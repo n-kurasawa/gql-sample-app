@@ -7,7 +7,8 @@
     "watch:build": "yarn run build --watch",
     "start": "node lib/index.js",
     "watch:start": "nodemon yarn run start",
-    "dev": "concurrently 'yarn:watch:*'"
+    "dev": "concurrently 'yarn:watch:*'",
+    "generate": "graphql-codegen"
   },
   "dependencies": {
     "apollo-server": "^3.5.0",

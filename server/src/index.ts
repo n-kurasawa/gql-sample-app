@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from "apollo-server";
+import { Resolvers } from "./generated/graphql";
 
 const typeDefs = gql`
   type Query {
@@ -6,7 +7,7 @@ const typeDefs = gql`
   }
 `;
 
-const resolvers = {
+const resolvers: Resolvers = {
   Query: {
     hello: () => "world",
   },
