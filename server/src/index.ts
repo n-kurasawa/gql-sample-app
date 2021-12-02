@@ -1,5 +1,7 @@
 import { ApolloServer, gql } from "apollo-server";
 import { fromGlobalId, toGlobalId } from "graphql-relay";
+import { findBlog } from "./data/blog";
+import { findPost } from "./data/post";
 import { Resolvers } from "./generated/graphql";
 
 const typeDefs = gql`
