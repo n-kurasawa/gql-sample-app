@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from "apollo-server";
-import { fromGlobalId, toGlobalId } from "graphql-relay";
-import { findBlog } from "./data/blog";
-import { findPost } from "./data/post";
+import { connectionFromArray, fromGlobalId, toGlobalId } from "graphql-relay";
+import { findBlog, getBlogs } from "./data/blog";
+import { findPost, findPostByBlogId } from "./data/post";
 import { Resolvers } from "./generated/graphql";
 
 const typeDefs = gql`
@@ -79,6 +79,39 @@ const resolvers: Resolvers = {
         default:
           throw new Error(`Unknown type: ${type}`);
       }
+    },
+    blogs: async (parent, args) => {
+      return connectionFromArray(
+        (await getBlogs()).map((blog) => ({
+          ...blog,
+          id: toGlobalId("Blog", blog.id),
+        })),
+        args
+      );
+    },
+  },
+  Blog: {
+    posts: async (parent, args) => {
+      const { id } = fromGlobalId(parent.id);
+      return connectionFromArray(
+        (await findPostByBlogId(id)).map((post) => ({
+          ...post,
+          id: toGlobalId("Post", id),
+        })),
+        args
+      );
+    },
+  },
+  Post: {
+    blog: async (parent) => {
+      const blog = await findBlog(parent.blogId);
+      if (!blog) {
+        throw new Error(`Blog is not found`);
+      }
+      return {
+        ...blog,
+        id: toGlobalId("Blog", blog.id),
+      };
     },
   },
   Node: {
