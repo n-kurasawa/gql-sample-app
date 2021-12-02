@@ -1,9 +1,11 @@
 import { GraphQLResolveInfo } from 'graphql';
+import { BlogModel, PostModel } from '../models';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -157,34 +159,34 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Blog: ResolverTypeWrapper<Blog>;
-  BlogConnection: ResolverTypeWrapper<BlogConnection>;
-  BlogEdge: ResolverTypeWrapper<BlogEdge>;
+  Blog: ResolverTypeWrapper<BlogModel>;
+  BlogConnection: ResolverTypeWrapper<Omit<BlogConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['BlogEdge']>>> }>;
+  BlogEdge: ResolverTypeWrapper<Omit<BlogEdge, 'node'> & { node?: Maybe<ResolversTypes['Blog']> }>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Node: ResolversTypes['Blog'] | ResolversTypes['Post'];
   PageInfo: ResolverTypeWrapper<PageInfo>;
-  Post: ResolverTypeWrapper<Post>;
-  PostConnection: ResolverTypeWrapper<PostConnection>;
-  PostEdge: ResolverTypeWrapper<PostEdge>;
+  Post: ResolverTypeWrapper<PostModel>;
+  PostConnection: ResolverTypeWrapper<Omit<PostConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['PostEdge']>>> }>;
+  PostEdge: ResolverTypeWrapper<Omit<PostEdge, 'node'> & { node?: Maybe<ResolversTypes['Post']> }>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Blog: Blog;
-  BlogConnection: BlogConnection;
-  BlogEdge: BlogEdge;
+  Blog: BlogModel;
+  BlogConnection: Omit<BlogConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['BlogEdge']>>> };
+  BlogEdge: Omit<BlogEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Blog']> };
   Boolean: Scalars['Boolean'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   Node: ResolversParentTypes['Blog'] | ResolversParentTypes['Post'];
   PageInfo: PageInfo;
-  Post: Post;
-  PostConnection: PostConnection;
-  PostEdge: PostEdge;
+  Post: PostModel;
+  PostConnection: Omit<PostConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['PostEdge']>>> };
+  PostEdge: Omit<PostEdge, 'node'> & { node?: Maybe<ResolversParentTypes['Post']> };
   Query: {};
   String: Scalars['String'];
 };
