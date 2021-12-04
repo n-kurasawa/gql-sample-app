@@ -1,6 +1,7 @@
 import { ApolloServer, gql } from "apollo-server";
+import DataLoader from "dataloader";
 import { connectionFromArray, fromGlobalId, toGlobalId } from "graphql-relay";
-import { findBlog, getBlogs } from "./data/blog";
+import { findBlog, getBlogs, BlogData, findBlogs } from "./data/blog";
 import { findPost, findPostByBlogId } from "./data/post";
 import { Resolvers } from "./generated/graphql";
 
@@ -53,6 +54,13 @@ const typeDefs = gql`
   }
 `;
 
+const context = {
+  blogLoader: new DataLoader<string, BlogData>(async (ids) => {
+    const blogs = await findBlogs(ids);
+    return ids.map((id) => blogs[id] ?? new Error(`No result for ${id}`));
+  }),
+};
+
 const resolvers: Resolvers = {
   Query: {
     node: async (parent, args) => {
@@ -103,11 +111,8 @@ const resolvers: Resolvers = {
     },
   },
   Post: {
-    blog: async (parent) => {
-      const blog = await findBlog(parent.blogId);
-      if (!blog) {
-        throw new Error(`Blog is not found`);
-      }
+    blog: async (parent, args, context) => {
+      const blog = await context.blogLoader.load(parent.blogId);
       return {
         ...blog,
         id: toGlobalId("Blog", blog.id),
@@ -131,6 +136,7 @@ const resolvers: Resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context,
 });
 
 server.listen().then(({ url }) => {
