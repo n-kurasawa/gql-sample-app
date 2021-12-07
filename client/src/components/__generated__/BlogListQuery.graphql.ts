@@ -4,6 +4,7 @@
 
 import { ConcreteRequest } from "relay-runtime";
 
+import { FragmentRefs } from "relay-runtime";
 export type BlogListQueryVariables = {
     first: number;
 };
@@ -12,7 +13,7 @@ export type BlogListQueryResponse = {
         readonly edges: ReadonlyArray<{
             readonly node: {
                 readonly id: string;
-                readonly name: string;
+                readonly " $fragmentRefs": FragmentRefs<"BlogListItem">;
             } | null;
         } | null> | null;
     };
@@ -32,10 +33,14 @@ query BlogListQuery(
     edges {
       node {
         id
-        name
+        ...BlogListItem
       }
     }
   }
+}
+
+fragment BlogListItem on Blog {
+  name
 }
 */
 
@@ -49,47 +54,56 @@ var v0 = [
 ],
 v1 = [
   {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "first",
-        "variableName": "first"
-      }
-    ],
-    "concreteType": "BlogConnection",
-    "kind": "LinkedField",
-    "name": "blogs",
-    "plural": false,
+    "kind": "Variable",
+    "name": "first",
+    "variableName": "first"
+  }
+],
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
+  "fragment": {
+    "argumentDefinitions": (v0/*: any*/),
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "BlogListQuery",
     "selections": [
       {
         "alias": null,
-        "args": null,
-        "concreteType": "BlogEdge",
+        "args": (v1/*: any*/),
+        "concreteType": "BlogConnection",
         "kind": "LinkedField",
-        "name": "edges",
-        "plural": true,
+        "name": "blogs",
+        "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "Blog",
+            "concreteType": "BlogEdge",
             "kind": "LinkedField",
-            "name": "node",
-            "plural": false,
+            "name": "edges",
+            "plural": true,
             "selections": [
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "id",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "name",
+                "concreteType": "Blog",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v2/*: any*/),
+                  {
+                    "args": null,
+                    "kind": "FragmentSpread",
+                    "name": "BlogListItem"
+                  }
+                ],
                 "storageKey": null
               }
             ],
@@ -99,16 +113,6 @@ v1 = [
         "storageKey": null
       }
     ],
-    "storageKey": null
-  }
-];
-return {
-  "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "BlogListQuery",
-    "selections": (v1/*: any*/),
     "type": "Query",
     "abstractKey": null
   },
@@ -117,17 +121,59 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "BlogListQuery",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "BlogConnection",
+        "kind": "LinkedField",
+        "name": "blogs",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BlogEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "Blog",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v2/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "name",
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "9472ef63a65c9ffc3fd0c62b7a24e7bd",
+    "cacheID": "fe1672d38633fe305f39af60bedb5b85",
     "id": null,
     "metadata": {},
     "name": "BlogListQuery",
     "operationKind": "query",
-    "text": "query BlogListQuery(\n  $first: Int!\n) {\n  blogs(first: $first) {\n    edges {\n      node {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query BlogListQuery(\n  $first: Int!\n) {\n  blogs(first: $first) {\n    edges {\n      node {\n        id\n        ...BlogListItem\n      }\n    }\n  }\n}\n\nfragment BlogListItem on Blog {\n  name\n}\n"
   }
 };
 })();
-(node as any).hash = '3ffed7babc8d4aa3f51c3fa1979847b3';
+(node as any).hash = '90e8138d1d8df8ef38f517c55412f66d';
 export default node;

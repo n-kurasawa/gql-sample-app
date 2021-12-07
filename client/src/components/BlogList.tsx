@@ -2,6 +2,7 @@ import graphql from "babel-plugin-relay/macro";
 import { useLazyLoadQuery } from "react-relay";
 
 import { BlogListQuery } from "./__generated__/BlogListQuery.graphql";
+import { BlogListItem } from "./BlogListItem";
 
 export const BlogList: React.VFC = () => {
   const { blogs } = useLazyLoadQuery<BlogListQuery>(
@@ -11,7 +12,7 @@ export const BlogList: React.VFC = () => {
           edges {
             node {
               id
-              name
+              ...BlogListItem
             }
           }
         }
@@ -19,11 +20,12 @@ export const BlogList: React.VFC = () => {
     `,
     { first: 10 }
   );
-  console.log(blogs);
   return (
     <ul>
       {blogs.edges?.map((edge) => (
-        <li key={edge?.node?.id}>{edge?.node?.name}</li>
+        <li key={edge?.node?.id}>
+          {edge?.node && <BlogListItem blog={edge.node} />}
+        </li>
       ))}
     </ul>
   );
