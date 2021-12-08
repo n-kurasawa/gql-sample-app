@@ -1,14 +1,23 @@
 import graphql from "babel-plugin-relay/macro";
-import { useLazyLoadQuery } from "react-relay";
+import { usePaginationFragment } from "react-relay";
 
-import { BlogListQuery } from "./__generated__/BlogListQuery.graphql";
+import { BlogList$key } from "./__generated__/BlogList.graphql";
 import { BlogListItem } from "./BlogListItem";
 
-export const BlogList: React.VFC = () => {
-  const { blogs } = useLazyLoadQuery<BlogListQuery>(
+interface Props {
+  blogs: BlogList$key;
+}
+
+export const BlogList: React.VFC<Props> = ({ blogs }) => {
+  const { data, loadNext, hasNext } = usePaginationFragment(
     graphql`
-      query BlogListQuery($first: Int!) {
-        blogs(first: $first) {
+      fragment BlogList on Query
+      @argumentDefinitions(
+        first: { type: "Int!", defaultValue: 10 }
+        after: { type: "String", defaultValue: "" }
+      )
+      @refetchable(queryName: "BlogListPaginationQuery") {
+        blogs(first: $first, after: $after) @connection(key: "BlogList_blogs") {
           edges {
             node {
               id
@@ -18,15 +27,22 @@ export const BlogList: React.VFC = () => {
         }
       }
     `,
-    { first: 10 }
+    blogs
   );
   return (
-    <ul>
-      {blogs.edges?.map((edge) => (
-        <li key={edge?.node?.id}>
-          {edge?.node && <BlogListItem blog={edge.node} />}
-        </li>
-      ))}
-    </ul>
+    <div>
+      <ul>
+        {data.blogs.edges?.map((edge) => (
+          <li key={edge?.node?.id}>
+            {edge?.node && <BlogListItem blog={edge.node} />}
+          </li>
+        ))}
+      </ul>
+      {hasNext && (
+        <div>
+          <button onClick={async () => await loadNext(10)}>Load more</button>
+        </div>
+      )}
+    </div>
   );
 };

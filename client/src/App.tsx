@@ -1,14 +1,14 @@
 import React from "react";
 import { RelayEnvironmentProvider } from "react-relay";
 
-import { BlogList } from "./components/BlogList";
+import { Blogs } from "./components/Blogs";
 import { relayEnvironment } from "./lib/relayEnvironment";
 
 const App: React.VFC = () => {
   return (
     <RelayEnvironmentProvider environment={relayEnvironment}>
       <React.Suspense fallback="Loading...">
-        <BlogList />
+        <Blogs />
       </React.Suspense>
     </RelayEnvironmentProvider>
   );
